@@ -1076,7 +1076,7 @@
 
         local items = cfg.items; do 
             items[ "tab_holder" ] = library:create( "Frame" , {
-                Parent = library.cache;
+                Parent = library["items"];
                 Name = "\0";
                 Visible = false;
                 BackgroundTransparency = 1;
@@ -1154,7 +1154,7 @@
 
             -- Multi Sections
             items[ "multi_section_button_holder" ] = library:create( "Frame" , {
-                Parent = library.cache;
+                Parent = library["items"];
                 BackgroundTransparency = 1;
                 Name = "\0";
                 Visible = false;
@@ -1254,7 +1254,7 @@
 
                     -- Tab 
                     multi_items[ "tab" ] = library:create( "Frame" , {
-                        Parent = library.cache;
+                        Parent = library["items"];
                         BackgroundTransparency = 1;
                         Name = "\0";
                         BorderColor3 = rgb(0, 0, 0);
@@ -1362,9 +1362,9 @@
                 library:tween(selected_tab[ 3 ], {TextColor3 = rgb(72, 72, 73)})
 
                 selected_tab[ 4 ].Visible = false
-                selected_tab[ 4 ].Parent = library[ "cache" ]
+                selected_tab[ 4 ].Parent = library["items"]
                 selected_tab[ 5 ].Visible = false
-                selected_tab[ 5 ].Parent = library[ "cache" ]
+                selected_tab[ 5 ].Parent = library["items"]
             end
 
             library:tween(items[ "button" ], {BackgroundTransparency = 0})
