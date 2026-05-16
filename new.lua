@@ -680,386 +680,392 @@
 --
 
     function library:window(properties)
-        local baseWidth = 720
-        local baseHeight = 580
+    local baseWidth = 720
+    local baseHeight = 580
+    
+    if isPhone then
+        baseWidth = viewportSize.X * 0.94
+        baseHeight = viewportSize.Y * 0.78
+    elseif isTablet then
+        baseWidth = 680
+        baseHeight = 560
+    end
+    
+    local cfg = { 
+        suffix = properties.suffix or properties.Suffix or "tech";
+        name = properties.name or properties.Name or "zyulo";
+        game_name = properties.gameInfo or properties.game_info or properties.GameInfo or "Zyulo Framework";
+        size = properties.size or properties.Size or dim2(0, baseWidth, 0, baseHeight);
+        selected_tab;
+        items = {};
+        tween;
+        menuOpen = true;
+        footer1 = "Zyulo Library";
+        footer2 = "v3.0";
+    }
+    
+    library[ "items" ] = library:create( "ScreenGui" , {
+        Parent = coregui;
+        Name = "ZyuloMain";
+        Enabled = true;
+        ZIndexBehavior = Enum.ZIndexBehavior.Global;
+        IgnoreGuiInset = true;
+        ResetOnSpawn = false;
+    });
+    
+    library[ "other" ] = library:create( "ScreenGui" , {
+        Parent = coregui;
+        Name = "ZyuloOther";
+        Enabled = false;
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+        IgnoreGuiInset = true;
+        ResetOnSpawn = false;
+    }); 
+
+    local items = cfg.items; do
+        items[ "main" ] = library:create( "Frame" , {
+            Parent = library[ "items" ];
+            Size = cfg.size;
+            Name = "main";
+            Position = dim2(0.5, -cfg.size.X.Offset / 2, 0.5, -cfg.size.Y.Offset / 2);
+            BorderColor3 = rgb(0, 0, 0);
+            BorderSizePixel = 0;
+            BackgroundColor3 = themes.preset.background;
+            ClipsDescendants = true;
+        }); 
         
-        if isPhone then
-            baseWidth = viewportSize.X * 0.94
-            baseHeight = viewportSize.Y * 0.78
-        elseif isTablet then
-            baseWidth = 680
-            baseHeight = 560
-        end
+        items[ "main" ].Position = dim2(0, math.max(0, items[ "main" ].AbsolutePosition.X), 0, math.max(0, items[ "main" ].AbsolutePosition.Y))
         
-        local cfg = { 
-            suffix = properties.suffix or properties.Suffix or "tech";
-            name = properties.name or properties.Name or "zyulo";
-            game_name = properties.gameInfo or properties.game_info or properties.GameInfo or "Zyulo Framework";
-            size = properties.size or properties.Size or dim2(0, baseWidth, 0, baseHeight);
-            selected_tab;
-            items = {};
-            tween;
-            menuOpen = true;
-            footer1 = "Zyulo Library";
-            footer2 = "v3.0";
-        }
-        
-        library[ "items" ] = library:create( "ScreenGui" , {
-            Parent = coregui;
-            Name = "ZyuloMain";
-            Enabled = true;
-            ZIndexBehavior = Enum.ZIndexBehavior.Global;
-            IgnoreGuiInset = true;
-            ResetOnSpawn = false;
+        library:create( "UICorner" , {
+            Parent = items[ "main" ];
+            CornerRadius = dim(0, 10);
+            Name = "MainCorner";
         });
         
-        library[ "other" ] = library:create( "ScreenGui" , {
-            Parent = coregui;
-            Name = "ZyuloOther";
-            Enabled = false;
-            ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
-            IgnoreGuiInset = true;
-            ResetOnSpawn = false;
+        library:create( "UIStroke" , {
+            Color = themes.preset.border;
+            Parent = items[ "main" ];
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+            Name = "MainStroke";
+        });
+        library:apply_theme(items["main"]:FindFirstChild("MainStroke"), "border", "Color");
+        
+        items[ "drag_handle" ] = library:create( "TextButton" , {
+            Parent = items[ "main" ];
+            Name = "DragHandle";
+            BackgroundTransparency = 1;
+            Text = "";
+            Size = dim2(1, 0, 0, 30);
+            Position = dim2(0, 0, 0, 0);
+            BorderColor3 = rgb(0, 0, 0);
+            BorderSizePixel = 0;
+            BackgroundColor3 = rgb(255, 255, 255);
+            ZIndex = 10;
+        });
+        
+        items[ "side_frame" ] = library:create( "Frame" , {
+            Parent = items[ "main" ];
+            Name = "side_frame";
+            BackgroundTransparency = 1;
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(0, 200 * scaleFactor, 1, -25);
+            BorderSizePixel = 0;
+            BackgroundColor3 = themes.preset.background;
+        });
+        
+        library:create( "Frame" , {
+            AnchorPoint = vec2(1, 0);
+            Parent = items[ "side_frame" ];
+            Position = dim2(1, 0, 0, 0);
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(0, 1, 1, 0);
+            BorderSizePixel = 0;
+            BackgroundColor3 = themes.preset.border;
+            Name = "SideDivider";
+        });
+        
+        items[ "side_scroll" ] = library:create( "ScrollingFrame" , {
+            Parent = items[ "side_frame" ];
+            Name = "side_scroll";
+            BackgroundTransparency = 1;
+            Position = dim2(0, 0, 0, 60);
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, 0, 1, -60);
+            BorderSizePixel = 0;
+            CanvasSize = dim2(0, 0, 0, 0);
+            AutomaticCanvasSize = Enum.AutomaticSize.Y;
+            ScrollBarThickness = 3;
+            ScrollBarImageColor3 = rgb(44, 44, 46);
+            ScrollingDirection = Enum.ScrollingDirection.Y;
+        });
+        
+        items[ "button_holder" ] = library:create( "Frame" , {
+            Parent = items[ "side_scroll" ];
+            Name = "button_holder";
+            BackgroundTransparency = 1;
+            Size = dim2(1, 0, 0, 0);
+            BorderColor3 = rgb(0, 0, 0);
+            BorderSizePixel = 0;
+            AutomaticSize = Enum.AutomaticSize.Y;
+            BackgroundColor3 = rgb(255, 255, 255);
+        }); cfg.button_holder = items[ "button_holder" ];
+        
+        library:create( "UIListLayout" , {
+            Parent = items[ "button_holder" ];
+            Padding = dim(0, 5);
+            SortOrder = Enum.SortOrder.LayoutOrder;
+            Name = "ButtonListLayout";
+        });
+        
+        library:create( "UIPadding" , {
+            PaddingTop = dim(0, 16);
+            PaddingBottom = dim(0, 36);
+            Parent = items[ "button_holder" ];
+            PaddingRight = dim(0, 11);
+            PaddingLeft = dim(0, 10);
+            Name = "ButtonPadding";
+        });
+
+        local accent = themes.preset.accent;
+        items[ "title" ] = library:create( "TextLabel" , {
+            FontFace = fonts.font;
+            BorderColor3 = rgb(0, 0, 0);
+            Parent = items[ "side_frame" ];
+            Name = "TitleLabel";
+            Text = string.format('<u>%s</u><font color = "rgb(255, 255, 255)">%s</font>', cfg.name, cfg.suffix);
+            BackgroundTransparency = 1;
+            Size = dim2(1, 0, 0, 70);
+            TextColor3 = themes.preset.accent;
+            BorderSizePixel = 0;
+            RichText = true;
+            TextSize = 30;
+            BackgroundColor3 = rgb(255, 255, 255);
+        }); library:apply_theme(items[ "title" ], "accent", "TextColor3");
+        
+        items[ "multi_holder" ] = library:create( "Frame" , {
+            Parent = items[ "main" ];
+            Name = "multi_holder";
+            BackgroundTransparency = 1;
+            Position = dim2(0, 200 * scaleFactor, 0, 0);
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, -200 * scaleFactor, 0, 56);
+            BorderSizePixel = 0;
+            BackgroundColor3 = rgb(255, 255, 255);
+        }); cfg.multi_holder = items[ "multi_holder" ];
+        
+        library:create( "Frame" , {
+            AnchorPoint = vec2(0, 1);
+            Parent = items[ "multi_holder" ];
+            Position = dim2(0, 0, 1, 0);
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, 0, 0, 1);
+            BorderSizePixel = 0;
+            BackgroundColor3 = themes.preset.border;
+            Name = "MultiDivider";
+        });
+        
+        items[ "global_fade" ] = library:create( "Frame" , {
+            Parent = items[ "main" ];
+            Name = "global_fade";
+            BackgroundTransparency = 1;
+            Position = dim2(0, 200 * scaleFactor, 0, 56);
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, -200 * scaleFactor, 1, -81);
+            BorderSizePixel = 0;
+            BackgroundColor3 = themes.preset.background;
+            ZIndex = 2;
+        });                
+        
+        -- Footer Info Bar
+        items[ "info" ] = library:create( "Frame" , {
+            AnchorPoint = vec2(0, 1);
+            Parent = items[ "main" ];
+            Name = "info";
+            Position = dim2(0, 0, 1, 0);
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, 0, 0, 25);
+            BorderSizePixel = 0;
+            BackgroundColor3 = themes.preset.border;
+        });
+        
+        library:create( "UICorner" , {
+            Parent = items[ "info" ];
+            CornerRadius = dim(0, 10);
+            Name = "InfoCorner";
+        });
+        
+        items[ "grey_fill" ] = library:create( "Frame" , {
+            Name = "grey_fill";
+            Parent = items[ "info" ];
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, 0, 0, 6);
+            BorderSizePixel = 0;
+            BackgroundColor3 = themes.preset.border;
+        });
+        
+        -- Footer 1 (Left)
+        items[ "footer1" ] = library:create( "TextLabel" , {
+            FontFace = fonts.font;
+            Parent = items[ "info" ];
+            Name = "footer1";
+            TextColor3 = rgb(150, 150, 150);
+            BorderColor3 = rgb(0, 0, 0);
+            Text = cfg.footer1;
+            Size = dim2(1, 0, 0, 0);
+            AnchorPoint = vec2(0, 0.5);
+            Position = dim2(0, 10, 0.5, -1);
+            BackgroundTransparency = 1;
+            TextXAlignment = Enum.TextXAlignment.Left;
+            BorderSizePixel = 0;
+            AutomaticSize = Enum.AutomaticSize.XY;
+            TextSize = 13;
+            BackgroundColor3 = rgb(255, 255, 255);
         }); 
-
-        local items = cfg.items; do
-            items[ "main" ] = library:create( "Frame" , {
-                Parent = library[ "items" ];
-                Size = cfg.size;
-                Name = "\0";
-                Position = dim2(0.5, -cfg.size.X.Offset / 2, 0.5, -cfg.size.Y.Offset / 2);
-                BorderColor3 = rgb(0, 0, 0);
-                BorderSizePixel = 0;
-                BackgroundColor3 = themes.preset.background;
-                ClipsDescendants = true;
-            }); 
-            
-            items[ "main" ].Position = dim2(0, math.max(0, items[ "main" ].AbsolutePosition.X), 0, math.max(0, items[ "main" ].AbsolutePosition.Y))
-            
-            library:create( "UICorner" , {
-                Parent = items[ "main" ];
-                CornerRadius = dim(0, 10)
-            });
-            
-            library:create( "UIStroke" , {
-                Color = themes.preset.border;
-                Parent = items[ "main" ];
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-            });
-            library:apply_theme(items["main"]:FindFirstChildOfClass("UIStroke"), "border", "Color");
-            
-            items[ "drag_handle" ] = library:create( "TextButton" , {
-                Parent = items[ "main" ];
-                Name = "DragHandle";
-                BackgroundTransparency = 1;
-                Text = "";
-                Size = dim2(1, 0, 0, 30);
-                Position = dim2(0, 0, 0, 0);
-                BorderColor3 = rgb(0, 0, 0);
-                BorderSizePixel = 0;
-                BackgroundColor3 = rgb(255, 255, 255);
-                ZIndex = 10;
-            });
-            
-            items[ "side_frame" ] = library:create( "Frame" , {
-                Parent = items[ "main" ];
-                BackgroundTransparency = 1;
-                Name = "\0";
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(0, 200 * scaleFactor, 1, -25);
-                BorderSizePixel = 0;
-                BackgroundColor3 = themes.preset.background;
-            });
-            
-            library:create( "Frame" , {
-                AnchorPoint = vec2(1, 0);
-                Parent = items[ "side_frame" ];
-                Position = dim2(1, 0, 0, 0);
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(0, 1, 1, 0);
-                BorderSizePixel = 0;
-                BackgroundColor3 = themes.preset.border;
-            });
-            
-            items[ "side_scroll" ] = library:create( "ScrollingFrame" , {
-                Parent = items[ "side_frame" ];
-                Name = "\0";
-                BackgroundTransparency = 1;
-                Position = dim2(0, 0, 0, 60);
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, 0, 1, -60);
-                BorderSizePixel = 0;
-                CanvasSize = dim2(0, 0, 0, 0);
-                AutomaticCanvasSize = Enum.AutomaticSize.Y;
-                ScrollBarThickness = 3;
-                ScrollBarImageColor3 = rgb(44, 44, 46);
-                ScrollingDirection = Enum.ScrollingDirection.Y;
-            });
-            
-            items[ "button_holder" ] = library:create( "Frame" , {
-                Parent = items[ "side_scroll" ];
-                Name = "\0";
-                BackgroundTransparency = 1;
-                Size = dim2(1, 0, 0, 0);
-                BorderColor3 = rgb(0, 0, 0);
-                BorderSizePixel = 0;
-                AutomaticSize = Enum.AutomaticSize.Y;
-                BackgroundColor3 = rgb(255, 255, 255);
-            }); cfg.button_holder = items[ "button_holder" ];
-            
-            library:create( "UIListLayout" , {
-                Parent = items[ "button_holder" ];
-                Padding = dim(0, 5);
-                SortOrder = Enum.SortOrder.LayoutOrder
-            });
-            
-            library:create( "UIPadding" , {
-                PaddingTop = dim(0, 16);
-                PaddingBottom = dim(0, 36);
-                Parent = items[ "button_holder" ];
-                PaddingRight = dim(0, 11);
-                PaddingLeft = dim(0, 10);
-            });
-
-            local accent = themes.preset.accent;
-            items[ "title" ] = library:create( "TextLabel" , {
-                FontFace = fonts.font;
-                BorderColor3 = rgb(0, 0, 0);
-                Parent = items[ "side_frame" ];
-                Name = "\0";
-                Text = string.format('<u>%s</u><font color = "rgb(255, 255, 255)">%s</font>', cfg.name, cfg.suffix);
-                BackgroundTransparency = 1;
-                Size = dim2(1, 0, 0, 70);
-                TextColor3 = themes.preset.accent;
-                BorderSizePixel = 0;
-                RichText = true;
-                TextSize = 30;
-                BackgroundColor3 = rgb(255, 255, 255);
-            }); library:apply_theme(items[ "title" ], "accent", "TextColor3");
-            
-            items[ "multi_holder" ] = library:create( "Frame" , {
-                Parent = items[ "main" ];
-                Name = "\0";
-                BackgroundTransparency = 1;
-                Position = dim2(0, 200 * scaleFactor, 0, 0);
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, -200 * scaleFactor, 0, 56);
-                BorderSizePixel = 0;
-                BackgroundColor3 = rgb(255, 255, 255);
-            }); cfg.multi_holder = items[ "multi_holder" ];
-            
-            library:create( "Frame" , {
-                AnchorPoint = vec2(0, 1);
-                Parent = items[ "multi_holder" ];
-                Position = dim2(0, 0, 1, 0);
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, 0, 0, 1);
-                BorderSizePixel = 0;
-                BackgroundColor3 = themes.preset.border;
-            });
-            
-            items[ "global_fade" ] = library:create( "Frame" , {
-                Parent = items[ "main" ];
-                Name = "\0";
-                BackgroundTransparency = 1;
-                Position = dim2(0, 200 * scaleFactor, 0, 56);
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, -200 * scaleFactor, 1, -81);
-                BorderSizePixel = 0;
-                BackgroundColor3 = themes.preset.background;
-                ZIndex = 2;
-            });                
-            
-            -- Footer Info Bar
-            items[ "info" ] = library:create( "Frame" , {
-                AnchorPoint = vec2(0, 1);
-                Parent = items[ "main" ];
-                Name = "\0";
-                Position = dim2(0, 0, 1, 0);
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, 0, 0, 25);
-                BorderSizePixel = 0;
-                BackgroundColor3 = themes.preset.border;
-            });
-            
-            library:create( "UICorner" , {
-                Parent = items[ "info" ];
-                CornerRadius = dim(0, 10);
-            });
-            
-            items[ "grey_fill" ] = library:create( "Frame" , {
-                Name = "\0";
-                Parent = items[ "info" ];
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, 0, 0, 6);
-                BorderSizePixel = 0;
-                BackgroundColor3 = themes.preset.border;
-            });
-            
-            -- Footer 1 (Left)
-            items[ "footer1" ] = library:create( "TextLabel" , {
-                FontFace = fonts.font;
-                Parent = items[ "info" ];
-                TextColor3 = rgb(150, 150, 150);
-                BorderColor3 = rgb(0, 0, 0);
-                Text = cfg.footer1;
-                Name = "\0";
-                Size = dim2(1, 0, 0, 0);
-                AnchorPoint = vec2(0, 0.5);
-                Position = dim2(0, 10, 0.5, -1);
-                BackgroundTransparency = 1;
-                TextXAlignment = Enum.TextXAlignment.Left;
-                BorderSizePixel = 0;
-                AutomaticSize = Enum.AutomaticSize.XY;
-                TextSize = 13;
-                BackgroundColor3 = rgb(255, 255, 255);
-            }); 
-            
-            -- Footer 2 (Right)
-            items[ "footer2" ] = library:create( "TextLabel" , {
-                Parent = items[ "info" ];
-                RichText = true;
-                Name = "\0";
-                TextColor3 = themes.preset.accent;
-                BorderColor3 = rgb(0, 0, 0);
-                Text = cfg.footer2;
-                Size = dim2(1, 0, 0, 0);
-                Position = dim2(0, -10, 0.5, -1);
-                AnchorPoint = vec2(0, 0.5);
-                BorderSizePixel = 0;
-                BackgroundTransparency = 1;
-                TextXAlignment = Enum.TextXAlignment.Right;
-                AutomaticSize = Enum.AutomaticSize.XY;
-                FontFace = fonts.font;
-                TextSize = 13;
-                BackgroundColor3 = rgb(255, 255, 255);
-            }); library:apply_theme(items[ "footer2" ], "accent", "TextColor3");        
-        end 
-
-        -- Mobile Toggle Button (Outside UI, persists)
-        local mobileToggle;
-        if isMobile then
-            mobileToggle = library:create("ImageButton", {
-                Parent = library["items"],
-                Name = "MobileToggle",
-                Size = dim2(0, 48, 0, 48),
-                Position = dim2(1, -60, 0, 15),
-                BackgroundColor3 = themes.preset.background,
-                BorderColor3 = rgb(0, 0, 0),
-                BorderSizePixel = 0,
-                Image = "rbxassetid://84983817196455",
-                ImageColor3 = themes.preset.accent,
-                AutoButtonColor = false,
-                ZIndex = 1000,
-                Visible = true,
-            });
-            
-            library:create("UICorner", {
-                Parent = mobileToggle,
-                CornerRadius = dim(0, 12)
-            });
-            
-            library:create("UIStroke", {
-                Color = themes.preset.border,
-                Parent = mobileToggle,
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-                Thickness = 2,
-            });
-            
-            library:create("UIAspectRatioConstraint", {
-                Parent = mobileToggle,
-                AspectRatio = 1,
-            });
-
-            -- Make toggle button draggable
-            local toggleDragging = false
-            local toggleStart = nil
-            local toggleStartPos = nil
-            local toggleMoved = false
-            
-            mobileToggle.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.Touch then
-                    toggleDragging = true
-                    toggleStart = input.Position
-                    toggleStartPos = mobileToggle.Position
-                    toggleMoved = false
-                end
-            end)
-            
-            mobileToggle.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.Touch then
-                    if not toggleMoved then
-                        cfg.toggle_menu(not cfg.menuOpen)
-                    end
-                    toggleDragging = false
-                end
-            end)
-            
-            library:connection(uis.InputChanged, function(input)
-                if toggleDragging and input.UserInputType == Enum.UserInputType.Touch then
-                    local delta = vec2(input.Position.X - toggleStart.X, input.Position.Y - toggleStart.Y)
-                    if math.abs(delta.X) > TAP_THRESHOLD or math.abs(delta.Y) > TAP_THRESHOLD then
-                        toggleMoved = true
-                    end
-                    local viewport_x = camera.ViewportSize.X
-                    local viewport_y = camera.ViewportSize.Y
-                    
-                    mobileToggle.Position = dim2(
-                        0,
-                        clamp(
-                            toggleStartPos.X.Offset + delta.X,
-                            0,
-                            viewport_x - mobileToggle.Size.X.Offset
-                        ),
-                        0,
-                        clamp(
-                            toggleStartPos.Y.Offset + delta.Y,
-                            0,
-                            viewport_y - mobileToggle.Size.Y.Offset
-                        )
-                    )
-                end
-            end)
-            
-            -- Keep button visible even when menu is toggled
-            mobileToggle.Parent = library["items"]
-        end
-
-        do -- Other
-            library:draggify(items[ "main" ])
-            library:resizify(items[ "main" ])
-            setupGlobalClickListener()
-        end 
-
-        function cfg.toggle_menu(bool) 
-            cfg.menuOpen = bool
-            library[ "items" ].Enabled = bool
-            
-            if mobileToggle then
-                mobileToggle.Visible = true
-            end
-        end
         
-        function cfg.update_footer1(text)
-            items["footer1"].Text = text
-        end
-        
-        function cfg.update_footer2(text)
-            items["footer2"].Text = text
-        end
-        
-        function cfg.set_theme(themeName)
-            if themeColors[themeName] then
-                library:apply_full_theme(themeColors[themeName])
-            end
-        end
-        
-        if isMobile then
-            cfg.toggle_menu(false)
-        end
-            
-        return setmetatable(cfg, library)
+        -- Footer 2 (Right)
+        items[ "footer2" ] = library:create( "TextLabel" , {
+            Parent = items[ "info" ];
+            Name = "footer2";
+            RichText = true;
+            TextColor3 = themes.preset.accent;
+            BorderColor3 = rgb(0, 0, 0);
+            Text = cfg.footer2;
+            Size = dim2(1, 0, 0, 0);
+            Position = dim2(0, -10, 0.5, -1);
+            AnchorPoint = vec2(0, 0.5);
+            BorderSizePixel = 0;
+            BackgroundTransparency = 1;
+            TextXAlignment = Enum.TextXAlignment.Right;
+            AutomaticSize = Enum.AutomaticSize.XY;
+            FontFace = fonts.font;
+            TextSize = 13;
+            BackgroundColor3 = rgb(255, 255, 255);
+        }); library:apply_theme(items[ "footer2" ], "accent", "TextColor3");        
     end 
+
+    -- Mobile Toggle Button (Outside UI, persists)
+    local mobileToggle;
+    if isMobile then
+        mobileToggle = library:create("ImageButton", {
+            Parent = library["items"],
+            Name = "MobileToggle",
+            Size = dim2(0, 48, 0, 48),
+            Position = dim2(1, -60, 0, 15),
+            BackgroundColor3 = themes.preset.background,
+            BorderColor3 = rgb(0, 0, 0),
+            BorderSizePixel = 0,
+            Image = "rbxassetid://84983817196455",
+            ImageColor3 = themes.preset.accent,
+            AutoButtonColor = false,
+            ZIndex = 1000,
+            Visible = true,
+        });
+        
+        library:create("UICorner", {
+            Parent = mobileToggle,
+            CornerRadius = dim(0, 12),
+            Name = "ToggleCorner"
+        });
+        
+        library:create("UIStroke", {
+            Color = themes.preset.border,
+            Parent = mobileToggle,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+            Thickness = 2,
+            Name = "ToggleStroke"
+        });
+        
+        library:create("UIAspectRatioConstraint", {
+            Parent = mobileToggle,
+            AspectRatio = 1,
+        });
+
+        -- Make toggle button draggable
+        local toggleDragging = false
+        local toggleStart = nil
+        local toggleStartPos = nil
+        local toggleMoved = false
+        
+        mobileToggle.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch then
+                toggleDragging = true
+                toggleStart = input.Position
+                toggleStartPos = mobileToggle.Position
+                toggleMoved = false
+            end
+        end)
+        
+        mobileToggle.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch then
+                if not toggleMoved then
+                    cfg.toggle_menu(not cfg.menuOpen)
+                end
+                toggleDragging = false
+            end
+        end)
+        
+        library:connection(uis.InputChanged, function(input)
+            if toggleDragging and input.UserInputType == Enum.UserInputType.Touch then
+                local delta = vec2(input.Position.X - toggleStart.X, input.Position.Y - toggleStart.Y)
+                if math.abs(delta.X) > TAP_THRESHOLD or math.abs(delta.Y) > TAP_THRESHOLD then
+                    toggleMoved = true
+                end
+                local viewport_x = camera.ViewportSize.X
+                local viewport_y = camera.ViewportSize.Y
+                
+                mobileToggle.Position = dim2(
+                    0,
+                    clamp(
+                        toggleStartPos.X.Offset + delta.X,
+                        0,
+                        viewport_x - mobileToggle.Size.X.Offset
+                    ),
+                    0,
+                    clamp(
+                        toggleStartPos.Y.Offset + delta.Y,
+                        0,
+                        viewport_y - mobileToggle.Size.Y.Offset
+                    )
+                )
+            end
+        end)
+    end
+
+    do -- Other
+        library:draggify(items[ "main" ])
+        library:resizify(items[ "main" ])
+        setupGlobalClickListener()
+    end 
+
+    function cfg.toggle_menu(bool) 
+        cfg.menuOpen = bool
+        library[ "items" ].Enabled = bool
+        
+        if mobileToggle then
+            mobileToggle.Visible = true
+        end
+    end
+    
+    function cfg.update_footer1(text)
+        items["footer1"].Text = text
+    end
+    
+    function cfg.update_footer2(text)
+        items["footer2"].Text = text
+    end
+    
+    function cfg.set_theme(themeName)
+        if themeColors[themeName] then
+            library:apply_full_theme(themeColors[themeName])
+        end
+    end
+    
+    if isMobile then
+        cfg.toggle_menu(false)
+    end
+        
+    return setmetatable(cfg, library)
+end 
 
     function library:tab(properties)
         local cfg = {
