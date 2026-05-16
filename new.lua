@@ -1304,7 +1304,7 @@
                         library:tween(page.button, {BackgroundTransparency = 1})
 
                         page.page.Visible = false
-                        page.page.Parent = library[ "cache" ] 
+                        page.page.Parent = library["items"] 
                     end 
                     
                     library:tween(data.text, {TextColor3 = rgb(255, 255, 255)})
