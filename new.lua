@@ -1046,12 +1046,16 @@
         end
     end
     
-    function cfg.update_footer1(text)
-        items["footer1"].Text = text
+        function cfg.update_footer1(text)
+        if items["footer1"] then
+            items["footer1"].Text = tostring(text)
+        end
     end
     
     function cfg.update_footer2(text)
-        items["footer2"].Text = text
+        if items["footer2"] then
+            items["footer2"].Text = tostring(text)
+        end
     end
     
     function cfg.set_theme(themeName)
