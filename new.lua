@@ -1068,358 +1068,358 @@
 end 
 
     function library:tab(properties)
-        local cfg = {
-            name = properties.name or properties.Name or "visuals"; 
-            icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6034767608";
-            
-            tabs = properties.tabs or properties.Tabs or {"Main", "Misc.", "Settings"};
-            pages = {};
-            current_multi; 
-            
-            items = {};
-            isSettingsTab = properties.isSettings or false;
-        } 
+    local cfg = {
+        name = properties.name or properties.Name or "visuals"; 
+        icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6034767608";
+        
+        tabs = properties.tabs or properties.Tabs or {"Main", "Misc.", "Settings"};
+        pages = {};
+        current_multi; 
+        
+        items = {};
+        isSettingsTab = properties.isSettings or false;
+    } 
 
-        local items = cfg.items; do 
-            items[ "tab_holder" ] = library:create( "Frame" , {
-                Parent = library["items"];
-                Name = "\0";
-                Visible = false;
-                BackgroundTransparency = 1;
-                Position = dim2(0, 200 * scaleFactor, 0, 56);
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, -220 * scaleFactor, 1, -101);
-                BorderSizePixel = 0;
-                BackgroundColor3 = rgb(255, 255, 255);
-            });
-            
-            items[ "button" ] = library:create( "TextButton" , {
-                FontFace = fonts.font;
-                TextColor3 = rgb(255, 255, 255);
-                BorderColor3 = rgb(0, 0, 0);
-                Text = "";
-                Parent = self.items[ "button_holder" ];
-                AutoButtonColor = false;
-                BackgroundTransparency = 1;
-                Name = "\0";
-                Size = dim2(1, 0, 0, 35);
-                BorderSizePixel = 0;
-                TextSize = 16;
-                BackgroundColor3 = rgb(29, 29, 29);
-                LayoutOrder = cfg.isSettingsTab and 999 or 0;
-            });
-            
-            items[ "icon" ] = library:create( "ImageLabel" , {
-                ImageColor3 = rgb(72, 72, 73);
-                BorderColor3 = rgb(0, 0, 0);
-                Parent = items[ "button" ];
-                AnchorPoint = vec2(0, 0.5);
-                Image = cfg.icon;
-                BackgroundTransparency = 1;
-                Position = dim2(0, 10, 0.5, 0);
-                Name = "\0";
-                Size = dim2(0, 22, 0, 22);
-                BorderSizePixel = 0;
-                BackgroundColor3 = rgb(255, 255, 255);
-            }); library:apply_theme(items[ "icon" ], "accent", "ImageColor3");
-            
-            items[ "name" ] = library:create( "TextLabel" , {
-                FontFace = fonts.font;
-                TextColor3 = rgb(72, 72, 73);
-                BorderColor3 = rgb(0, 0, 0);
-                Text = cfg.name;
-                Parent = items[ "button" ];
-                Name = "\0";
-                Size = dim2(0, 0, 1, 0);
-                Position = dim2(0, 40, 0, 0);
-                BackgroundTransparency = 1;
-                TextXAlignment = Enum.TextXAlignment.Left;
-                BorderSizePixel = 0;
-                AutomaticSize = Enum.AutomaticSize.X;
-                TextSize = 16;
-                BackgroundColor3 = rgb(255, 255, 255);
-            });
-            
-            library:create( "UIPadding" , {
-                Parent = items[ "name" ];
-                PaddingRight = dim(0, 5);
-                PaddingLeft = dim(0, 5);
-            });
-            
-            library:create( "UICorner" , {
-                Parent = items[ "button" ];
-                CornerRadius = dim(0, 7);
-            });
-            
-            library:create( "UIStroke" , {
-                Color = themes.preset.border;
-                Parent = items[ "button" ];
-                Enabled = false;
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
-            });
+    local items = cfg.items; do 
+        items[ "tab_holder" ] = library:create( "Frame" , {
+            Parent = library["items"]; -- FIXED: Was library.cache, now library["items"]
+            Name = "tab_holder";
+            Visible = false;
+            BackgroundTransparency = 1;
+            Position = dim2(0, 200 * scaleFactor, 0, 56);
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, -220 * scaleFactor, 1, -101);
+            BorderSizePixel = 0;
+            BackgroundColor3 = rgb(255, 255, 255);
+        });
+        
+        items[ "button" ] = library:create( "TextButton" , {
+            FontFace = fonts.font;
+            TextColor3 = rgb(255, 255, 255);
+            BorderColor3 = rgb(0, 0, 0);
+            Text = "";
+            Parent = self.items[ "button_holder" ];
+            AutoButtonColor = false;
+            BackgroundTransparency = 1;
+            Name = "\0";
+            Size = dim2(1, 0, 0, 35);
+            BorderSizePixel = 0;
+            TextSize = 16;
+            BackgroundColor3 = rgb(29, 29, 29);
+            LayoutOrder = cfg.isSettingsTab and 999 or 0;
+        });
+        
+        items[ "icon" ] = library:create( "ImageLabel" , {
+            ImageColor3 = rgb(72, 72, 73);
+            BorderColor3 = rgb(0, 0, 0);
+            Parent = items[ "button" ];
+            AnchorPoint = vec2(0, 0.5);
+            Image = cfg.icon;
+            BackgroundTransparency = 1;
+            Position = dim2(0, 10, 0.5, 0);
+            Name = "\0";
+            Size = dim2(0, 22, 0, 22);
+            BorderSizePixel = 0;
+            BackgroundColor3 = rgb(255, 255, 255);
+        }); library:apply_theme(items[ "icon" ], "accent", "ImageColor3");
+        
+        items[ "name" ] = library:create( "TextLabel" , {
+            FontFace = fonts.font;
+            TextColor3 = rgb(72, 72, 73);
+            BorderColor3 = rgb(0, 0, 0);
+            Text = cfg.name;
+            Parent = items[ "button" ];
+            Name = "\0";
+            Size = dim2(0, 0, 1, 0);
+            Position = dim2(0, 40, 0, 0);
+            BackgroundTransparency = 1;
+            TextXAlignment = Enum.TextXAlignment.Left;
+            BorderSizePixel = 0;
+            AutomaticSize = Enum.AutomaticSize.X;
+            TextSize = 16;
+            BackgroundColor3 = rgb(255, 255, 255);
+        });
+        
+        library:create( "UIPadding" , {
+            Parent = items[ "name" ];
+            PaddingRight = dim(0, 5);
+            PaddingLeft = dim(0, 5);
+        });
+        
+        library:create( "UICorner" , {
+            Parent = items[ "button" ];
+            CornerRadius = dim(0, 7);
+        });
+        
+        library:create( "UIStroke" , {
+            Color = themes.preset.border;
+            Parent = items[ "button" ];
+            Enabled = false;
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+        });
 
-            -- Multi Sections
-            items[ "multi_section_button_holder" ] = library:create( "Frame" , {
-                Parent = library["items"];
-                BackgroundTransparency = 1;
-                Name = "\0";
-                Visible = false;
-                BorderColor3 = rgb(0, 0, 0);
-                Size = dim2(1, 0, 1, 0);
-                BorderSizePixel = 0;
-                BackgroundColor3 = rgb(255, 255, 255);
-            });
-            
-            library:create( "UIListLayout" , {
-                Parent = items[ "multi_section_button_holder" ];
-                Padding = dim(0, 7);
-                SortOrder = Enum.SortOrder.LayoutOrder;
-                FillDirection = Enum.FillDirection.Horizontal;
-            });
-            
-            library:create( "UIPadding" , {
-                PaddingTop = dim(0, 8);
-                PaddingBottom = dim(0, 7);
-                Parent = items[ "multi_section_button_holder" ];
-                PaddingRight = dim(0, 7);
-                PaddingLeft = dim(0, 7);
-            });                        
+        -- Multi Sections
+        items[ "multi_section_button_holder" ] = library:create( "Frame" , {
+            Parent = library["items"]; -- FIXED: Was library.cache
+            BackgroundTransparency = 1;
+            Name = "\0";
+            Visible = false;
+            BorderColor3 = rgb(0, 0, 0);
+            Size = dim2(1, 0, 1, 0);
+            BorderSizePixel = 0;
+            BackgroundColor3 = rgb(255, 255, 255);
+        });
+        
+        library:create( "UIListLayout" , {
+            Parent = items[ "multi_section_button_holder" ];
+            Padding = dim(0, 7);
+            SortOrder = Enum.SortOrder.LayoutOrder;
+            FillDirection = Enum.FillDirection.Horizontal;
+        });
+        
+        library:create( "UIPadding" , {
+            PaddingTop = dim(0, 8);
+            PaddingBottom = dim(0, 7);
+            Parent = items[ "multi_section_button_holder" ];
+            PaddingRight = dim(0, 7);
+            PaddingLeft = dim(0, 7);
+        });                        
 
-            for _, section in cfg.tabs do
-                local data = {items = {}} 
+        for _, section in cfg.tabs do
+            local data = {items = {}} 
 
-                local multi_items = data.items; do 
-                    -- Button
-                    multi_items[ "button" ] = library:create( "TextButton" , {
-                        FontFace = fonts.font;
-                        TextColor3 = rgb(255, 255, 255);
-                        BorderColor3 = rgb(0, 0, 0);
-                        AutoButtonColor = false;
-                        Text = "";
-                        Parent = items[ "multi_section_button_holder" ];
-                        Name = "\0";
-                        Size = dim2(0, 0, 0, 39);
-                        BackgroundTransparency = 1;
-                        ClipsDescendants = true;
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.X;
-                        TextSize = 16;
-                        BackgroundColor3 = themes.preset.section;
-                    });
-                    library:apply_theme(multi_items["button"], "section", "BackgroundColor3");
-                    
-                    multi_items[ "name" ] = library:create( "TextLabel" , {
-                        FontFace = fonts.font;
-                        TextColor3 = rgb(62, 62, 63);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Text = section;
-                        Parent = multi_items[ "button" ];
-                        Name = "\0";
-                        Size = dim2(0, 0, 1, 0);
-                        BackgroundTransparency = 1;
-                        TextXAlignment = Enum.TextXAlignment.Left;
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 16;
-                        BackgroundColor3 = rgb(255, 255, 255);
-                    });
-                    
-                    library:create( "UIPadding" , {
-                        Parent = multi_items[ "name" ];
-                        PaddingRight = dim(0, 5);
-                        PaddingLeft = dim(0, 5);
-                    });
-                    
-                    multi_items[ "accent" ] = library:create( "Frame" , {
-                        BorderColor3 = rgb(0, 0, 0);
-                        AnchorPoint = vec2(0, 1);
-                        Parent = multi_items[ "button" ];
-                        BackgroundTransparency = 1;
-                        Position = dim2(0, 10, 1, 4);
-                        Name = "\0";
-                        Size = dim2(1, -20, 0, 6);
-                        BorderSizePixel = 0;
-                        BackgroundColor3 = themes.preset.accent;
-                    }); library:apply_theme(multi_items[ "accent" ], "accent", "BackgroundColor3");
-                    
-                    library:create( "UICorner" , {
-                        Parent = multi_items[ "accent" ];
-                        CornerRadius = dim(0, 999);
-                    });
-                    
-                    library:create( "UIPadding" , {
-                        Parent = multi_items[ "button" ];
-                        PaddingRight = dim(0, 10);
-                        PaddingLeft = dim(0, 10);
-                    });
-                    
-                    library:create( "UICorner" , {
-                        Parent = multi_items[ "button" ];
-                        CornerRadius = dim(0, 7);
-                    }); 
-
-                    -- Tab 
-                    multi_items[ "tab" ] = library:create( "Frame" , {
-                        Parent = library["items"];
-                        BackgroundTransparency = 1;
-                        Name = "\0";
-                        BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(1, -20, 1, -20);
-                        BorderSizePixel = 0;
-                        Visible = false;
-                        BackgroundColor3 = rgb(255, 255, 255);
-                    });
-                    
-                    library:create( "UIListLayout" , {
-                        FillDirection = Enum.FillDirection.Vertical;
-                        HorizontalFlex = Enum.UIFlexAlignment.Fill;
-                        Parent = multi_items[ "tab" ];
-                        Padding = dim(0, 7);
-                        SortOrder = Enum.SortOrder.LayoutOrder;
-                        VerticalFlex = Enum.UIFlexAlignment.Fill;
-                    });
-                    
-                    library:create( "UIPadding" , {
-                        PaddingTop = dim(0, 7);
-                        PaddingBottom = dim(0, 7);
-                        Parent = multi_items[ "tab" ];
-                        PaddingRight = dim(0, 7);
-                        PaddingLeft = dim(0, 7);
-                    });
-                end
-
-                data.text = multi_items[ "name" ]
-                data.accent = multi_items[ "accent" ]
-                data.button = multi_items[ "button" ]
-                data.page = multi_items[ "tab" ]
-                data.parent = setmetatable(data, library):sub_tab({}).items[ "tab_parent" ]
-
-                function data.open_page()
-                    local page = cfg.current_multi; 
-                    
-                    if page and page.text ~= data.text then 
-                        self.items[ "global_fade" ].BackgroundTransparency = 0
-                        library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
-                        
-                        page.page.Size = dim2(1, -20, 1, -20)
-                    end
-
-                    if page then
-                        library:tween(page.text, {TextColor3 = rgb(62, 62, 63)})
-                        library:tween(page.accent, {BackgroundTransparency = 1})
-                        library:tween(page.button, {BackgroundTransparency = 1})
-
-                        page.page.Visible = false
-                        page.page.Parent = library["items"] 
-                    end 
-                    
-                    library:tween(data.text, {TextColor3 = rgb(255, 255, 255)})
-                    library:tween(data.accent, {BackgroundTransparency = 0})
-                    library:tween(data.button, {BackgroundTransparency = 0})
-                    library:tween(data.page, {Size = dim2(1, 0, 1, 0)}, Enum.EasingStyle.Quad, 0.4)
-
-                    data.page.Visible = true
-                    data.page.Parent = items["tab_holder"]
-
-                    cfg.current_multi = data
-
-                    library:close_element()
-                end
-
-                local buttonTouchStart = nil
-                multi_items[ "button" ].InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        if input.UserInputType == Enum.UserInputType.Touch then
-                            buttonTouchStart = input.Position
-                        else
-                            data.open_page()
-                        end
-                    end
-                end)
+            local multi_items = data.items; do 
+                -- Button
+                multi_items[ "button" ] = library:create( "TextButton" , {
+                    FontFace = fonts.font;
+                    TextColor3 = rgb(255, 255, 255);
+                    BorderColor3 = rgb(0, 0, 0);
+                    AutoButtonColor = false;
+                    Text = "";
+                    Parent = items[ "multi_section_button_holder" ];
+                    Name = "\0";
+                    Size = dim2(0, 0, 0, 39);
+                    BackgroundTransparency = 1;
+                    ClipsDescendants = true;
+                    BorderSizePixel = 0;
+                    AutomaticSize = Enum.AutomaticSize.X;
+                    TextSize = 16;
+                    BackgroundColor3 = themes.preset.section;
+                });
+                library:apply_theme(multi_items["button"], "section", "BackgroundColor3");
                 
-                multi_items[ "button" ].InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.Touch and buttonTouchStart then
-                        if not wasDrag(input, buttonTouchStart) then
-                            data.open_page()
-                        end
-                        buttonTouchStart = nil
+                multi_items[ "name" ] = library:create( "TextLabel" , {
+                    FontFace = fonts.font;
+                    TextColor3 = rgb(62, 62, 63);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Text = section;
+                    Parent = multi_items[ "button" ];
+                    Name = "\0";
+                    Size = dim2(0, 0, 1, 0);
+                    BackgroundTransparency = 1;
+                    TextXAlignment = Enum.TextXAlignment.Left;
+                    BorderSizePixel = 0;
+                    AutomaticSize = Enum.AutomaticSize.XY;
+                    TextSize = 16;
+                    BackgroundColor3 = rgb(255, 255, 255);
+                });
+                
+                library:create( "UIPadding" , {
+                    Parent = multi_items[ "name" ];
+                    PaddingRight = dim(0, 5);
+                    PaddingLeft = dim(0, 5);
+                });
+                
+                multi_items[ "accent" ] = library:create( "Frame" , {
+                    BorderColor3 = rgb(0, 0, 0);
+                    AnchorPoint = vec2(0, 1);
+                    Parent = multi_items[ "button" ];
+                    BackgroundTransparency = 1;
+                    Position = dim2(0, 10, 1, 4);
+                    Name = "\0";
+                    Size = dim2(1, -20, 0, 6);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = themes.preset.accent;
+                }); library:apply_theme(multi_items[ "accent" ], "accent", "BackgroundColor3");
+                
+                library:create( "UICorner" , {
+                    Parent = multi_items[ "accent" ];
+                    CornerRadius = dim(0, 999);
+                });
+                
+                library:create( "UIPadding" , {
+                    Parent = multi_items[ "button" ];
+                    PaddingRight = dim(0, 10);
+                    PaddingLeft = dim(0, 10);
+                });
+                
+                library:create( "UICorner" , {
+                    Parent = multi_items[ "button" ];
+                    CornerRadius = dim(0, 7);
+                }); 
+
+                -- Tab 
+                multi_items[ "tab" ] = library:create( "Frame" , {
+                    Parent = library["items"]; -- FIXED: Was library.cache
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(1, -20, 1, -20);
+                    BorderSizePixel = 0;
+                    Visible = false;
+                    BackgroundColor3 = rgb(255, 255, 255);
+                });
+                
+                library:create( "UIListLayout" , {
+                    FillDirection = Enum.FillDirection.Vertical;
+                    HorizontalFlex = Enum.UIFlexAlignment.Fill;
+                    Parent = multi_items[ "tab" ];
+                    Padding = dim(0, 7);
+                    SortOrder = Enum.SortOrder.LayoutOrder;
+                    VerticalFlex = Enum.UIFlexAlignment.Fill;
+                });
+                
+                library:create( "UIPadding" , {
+                    PaddingTop = dim(0, 7);
+                    PaddingBottom = dim(0, 7);
+                    Parent = multi_items[ "tab" ];
+                    PaddingRight = dim(0, 7);
+                    PaddingLeft = dim(0, 7);
+                });
+            end
+
+            data.text = multi_items[ "name" ]
+            data.accent = multi_items[ "accent" ]
+            data.button = multi_items[ "button" ]
+            data.page = multi_items[ "tab" ]
+            data.parent = setmetatable(data, library):sub_tab({}).items[ "tab_parent" ]
+
+            function data.open_page()
+                local page = cfg.current_multi; 
+                
+                if page and page.text ~= data.text then 
+                    self.items[ "global_fade" ].BackgroundTransparency = 0
+                    library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
+                    
+                    page.page.Size = dim2(1, -20, 1, -20)
+                end
+
+                if page then
+                    library:tween(page.text, {TextColor3 = rgb(62, 62, 63)})
+                    library:tween(page.accent, {BackgroundTransparency = 1})
+                    library:tween(page.button, {BackgroundTransparency = 1})
+
+                    page.page.Visible = false
+                    page.page.Parent = library["items"] -- FIXED: Was library.cache
+                end 
+                
+                library:tween(data.text, {TextColor3 = rgb(255, 255, 255)})
+                library:tween(data.accent, {BackgroundTransparency = 0})
+                library:tween(data.button, {BackgroundTransparency = 0})
+                library:tween(data.page, {Size = dim2(1, 0, 1, 0)}, Enum.EasingStyle.Quad, 0.4)
+
+                data.page.Visible = true
+                data.page.Parent = items["tab_holder"]
+
+                cfg.current_multi = data
+
+                library:close_element()
+            end
+
+            local buttonTouchStart = nil
+            multi_items[ "button" ].InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    if input.UserInputType == Enum.UserInputType.Touch then
+                        buttonTouchStart = input.Position
+                    else
+                        data.open_page()
                     end
-                end)
+                end
+            end)
+            
+            multi_items[ "button" ].InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.Touch and buttonTouchStart then
+                    if not wasDrag(input, buttonTouchStart) then
+                        data.open_page()
+                    end
+                    buttonTouchStart = nil
+                end
+            end)
 
-                cfg.pages[#cfg.pages + 1] = setmetatable(data, library)
-            end 
-
-            cfg.pages[1].open_page()
+            cfg.pages[#cfg.pages + 1] = setmetatable(data, library)
         end 
 
-        function cfg.open_tab() 
-            local selected_tab = self.selected_tab
-            
-            if selected_tab then 
-                if selected_tab[ 4 ] ~= items[ "tab_holder" ] then 
-                    self.items[ "global_fade" ].BackgroundTransparency = 0
-                    
-                    library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
-                    selected_tab[ 4 ].Size = dim2(1, -220 * scaleFactor, 1, -101)
-                end
+        cfg.pages[1].open_page()
+    end 
 
-                library:tween(selected_tab[ 1 ], {BackgroundTransparency = 1})
-                library:tween(selected_tab[ 2 ], {ImageColor3 = rgb(72, 72, 73)})
-                library:tween(selected_tab[ 3 ], {TextColor3 = rgb(72, 72, 73)})
-
-                selected_tab[ 4 ].Visible = false
-                selected_tab[ 4 ].Parent = library["items"]
-                selected_tab[ 5 ].Visible = false
-                selected_tab[ 5 ].Parent = library["items"]
+    function cfg.open_tab() 
+        local selected_tab = self.selected_tab
+        
+        if selected_tab then 
+            if selected_tab[ 4 ] ~= items[ "tab_holder" ] then 
+                self.items[ "global_fade" ].BackgroundTransparency = 0
+                
+                library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
+                selected_tab[ 4 ].Size = dim2(1, -220 * scaleFactor, 1, -101)
             end
 
-            library:tween(items[ "button" ], {BackgroundTransparency = 0})
-            library:tween(items[ "icon" ], {ImageColor3 = themes.preset.accent})
-            library:tween(items[ "name" ], {TextColor3 = rgb(255, 255, 255)})
-            library:tween(items[ "tab_holder" ], {Size = dim2(1, -200 * scaleFactor, 1, -81)}, Enum.EasingStyle.Quad, 0.4)
-            
-            items[ "tab_holder" ].Visible = true 
-            items[ "tab_holder" ].Parent = self.items[ "main" ]
-            items[ "multi_section_button_holder" ].Visible = true 
-            items[ "multi_section_button_holder" ].Parent = self.items[ "multi_holder" ]
+            library:tween(selected_tab[ 1 ], {BackgroundTransparency = 1})
+            library:tween(selected_tab[ 2 ], {ImageColor3 = rgb(72, 72, 73)})
+            library:tween(selected_tab[ 3 ], {TextColor3 = rgb(72, 72, 73)})
 
-            self.selected_tab = {
-                items[ "button" ];
-                items[ "icon" ];
-                items[ "name" ];
-                items[ "tab_holder" ];
-                items[ "multi_section_button_holder" ];
-            }
-
-            library:close_element()
+            selected_tab[ 4 ].Visible = false
+            selected_tab[ 4 ].Parent = library["items"] -- FIXED: Was library.cache
+            selected_tab[ 5 ].Visible = false
+            selected_tab[ 5 ].Parent = library["items"] -- FIXED: Was library.cache
         end
 
-        local buttonTouchStart = nil
-        items[ "button" ].InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                if input.UserInputType == Enum.UserInputType.Touch then
-                    buttonTouchStart = input.Position
-                else
-                    cfg.open_tab()
-                end
-            end
-        end)
+        library:tween(items[ "button" ], {BackgroundTransparency = 0})
+        library:tween(items[ "icon" ], {ImageColor3 = themes.preset.accent})
+        library:tween(items[ "name" ], {TextColor3 = rgb(255, 255, 255)})
+        library:tween(items[ "tab_holder" ], {Size = dim2(1, -200 * scaleFactor, 1, -81)}, Enum.EasingStyle.Quad, 0.4)
         
-        items[ "button" ].InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.Touch and buttonTouchStart then
-                if not wasDrag(input, buttonTouchStart) then
-                    cfg.open_tab()
-                end
-                buttonTouchStart = nil
-            end
-        end)
-        
-        if not self.selected_tab then 
-            cfg.open_tab(true) 
-        end
+        items[ "tab_holder" ].Visible = true 
+        items[ "tab_holder" ].Parent = self.items[ "main" ]
+        items[ "multi_section_button_holder" ].Visible = true 
+        items[ "multi_section_button_holder" ].Parent = self.items[ "multi_holder" ]
 
-        return unpack(cfg.pages)
+        self.selected_tab = {
+            items[ "button" ];
+            items[ "icon" ];
+            items[ "name" ];
+            items[ "tab_holder" ];
+            items[ "multi_section_button_holder" ];
+        }
+
+        library:close_element()
     end
+
+    local buttonTouchStart = nil
+    items[ "button" ].InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            if input.UserInputType == Enum.UserInputType.Touch then
+                buttonTouchStart = input.Position
+            else
+                cfg.open_tab()
+            end
+        end
+    end)
+    
+    items[ "button" ].InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch and buttonTouchStart then
+            if not wasDrag(input, buttonTouchStart) then
+                cfg.open_tab()
+            end
+            buttonTouchStart = nil
+        end
+    end)
+    
+    if not self.selected_tab then 
+        cfg.open_tab(true) 
+    end
+
+    return unpack(cfg.pages)
+end
 
     function library:seperator(properties)
         local cfg = {items = {}, name = properties.Name or properties.name or "General"}
