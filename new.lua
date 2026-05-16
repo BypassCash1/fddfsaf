@@ -1080,9 +1080,12 @@ end
         isSettingsTab = properties.isSettings or false;
     } 
 
+    -- Get the window that this tab belongs to
+    local window = self
+    
     local items = cfg.items; do 
         items[ "tab_holder" ] = library:create( "Frame" , {
-            Parent = library["items"]; -- FIXED: Was library.cache, now library["items"]
+            Parent = library["items"];
             Name = "tab_holder";
             Visible = false;
             BackgroundTransparency = 1;
@@ -1093,12 +1096,13 @@ end
             BackgroundColor3 = rgb(255, 255, 255);
         });
         
+        -- Use window.button_holder instead of self.items["button_holder"]
         items[ "button" ] = library:create( "TextButton" , {
             FontFace = fonts.font;
             TextColor3 = rgb(255, 255, 255);
             BorderColor3 = rgb(0, 0, 0);
             Text = "";
-            Parent = self.items[ "button_holder" ];
+            Parent = window.items["button_holder"]; -- FIXED: Use window.items
             AutoButtonColor = false;
             BackgroundTransparency = 1;
             Name = "\0";
@@ -1160,7 +1164,7 @@ end
 
         -- Multi Sections
         items[ "multi_section_button_holder" ] = library:create( "Frame" , {
-            Parent = library["items"]; -- FIXED: Was library.cache
+            Parent = library["items"];
             BackgroundTransparency = 1;
             Name = "\0";
             Visible = false;
@@ -1260,7 +1264,7 @@ end
 
                 -- Tab 
                 multi_items[ "tab" ] = library:create( "Frame" , {
-                    Parent = library["items"]; -- FIXED: Was library.cache
+                    Parent = library["items"];
                     BackgroundTransparency = 1;
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
@@ -1298,8 +1302,8 @@ end
                 local page = cfg.current_multi; 
                 
                 if page and page.text ~= data.text then 
-                    self.items[ "global_fade" ].BackgroundTransparency = 0
-                    library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
+                    window.items[ "global_fade" ].BackgroundTransparency = 0
+                    library:tween(window.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
                     
                     page.page.Size = dim2(1, -20, 1, -20)
                 end
@@ -1310,7 +1314,7 @@ end
                     library:tween(page.button, {BackgroundTransparency = 1})
 
                     page.page.Visible = false
-                    page.page.Parent = library["items"] -- FIXED: Was library.cache
+                    page.page.Parent = library["items"]
                 end 
                 
                 library:tween(data.text, {TextColor3 = rgb(255, 255, 255)})
@@ -1353,13 +1357,13 @@ end
     end 
 
     function cfg.open_tab() 
-        local selected_tab = self.selected_tab
+        local selected_tab = window.selected_tab
         
         if selected_tab then 
             if selected_tab[ 4 ] ~= items[ "tab_holder" ] then 
-                self.items[ "global_fade" ].BackgroundTransparency = 0
+                window.items[ "global_fade" ].BackgroundTransparency = 0
                 
-                library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
+                library:tween(window.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
                 selected_tab[ 4 ].Size = dim2(1, -220 * scaleFactor, 1, -101)
             end
 
@@ -1368,9 +1372,9 @@ end
             library:tween(selected_tab[ 3 ], {TextColor3 = rgb(72, 72, 73)})
 
             selected_tab[ 4 ].Visible = false
-            selected_tab[ 4 ].Parent = library["items"] -- FIXED: Was library.cache
+            selected_tab[ 4 ].Parent = library["items"]
             selected_tab[ 5 ].Visible = false
-            selected_tab[ 5 ].Parent = library["items"] -- FIXED: Was library.cache
+            selected_tab[ 5 ].Parent = library["items"]
         end
 
         library:tween(items[ "button" ], {BackgroundTransparency = 0})
@@ -1379,11 +1383,11 @@ end
         library:tween(items[ "tab_holder" ], {Size = dim2(1, -200 * scaleFactor, 1, -81)}, Enum.EasingStyle.Quad, 0.4)
         
         items[ "tab_holder" ].Visible = true 
-        items[ "tab_holder" ].Parent = self.items[ "main" ]
+        items[ "tab_holder" ].Parent = window.items[ "main" ]
         items[ "multi_section_button_holder" ].Visible = true 
-        items[ "multi_section_button_holder" ].Parent = self.items[ "multi_holder" ]
+        items[ "multi_section_button_holder" ].Parent = window.items[ "multi_holder" ]
 
-        self.selected_tab = {
+        window.selected_tab = {
             items[ "button" ];
             items[ "icon" ];
             items[ "name" ];
@@ -1414,7 +1418,7 @@ end
         end
     end)
     
-    if not self.selected_tab then 
+    if not window.selected_tab then 
         cfg.open_tab(true) 
     end
 
